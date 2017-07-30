@@ -1,1 +1,1 @@
-personal blog
+:memo: personal blog made w/ [gatsbyjs](https://www.gatsbyjs.org/)
