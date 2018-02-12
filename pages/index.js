@@ -41,6 +41,49 @@ export default () => (
       <p>
         <Heading italic>heading-italic</Heading>
       </p>
+
+      <p>
+        <Label sans>label</Label>
+      </p>
+      <p>
+        <Label sans italic>
+          label-italic
+        </Label>
+      </p>
+      <p>
+        <Label sans bold>
+          label-bold
+        </Label>
+      </p>
+      <p>
+        <Display sans>display</Display>
+      </p>
+      <p>
+        <Display sans italic>
+          display-italic
+        </Display>
+      </p>
+      <p>
+        <Display sans bold>
+          display-bold
+        </Display>
+      </p>
+      <p>
+        <SubHeading sans>subheading</SubHeading>
+      </p>
+      <p>
+        <SubHeading sans italic>
+          subheading-italic
+        </SubHeading>
+      </p>
+      <p>
+        <Heading sans>heading</Heading>
+      </p>
+      <p>
+        <Heading sans italic>
+          heading-italic
+        </Heading>
+      </p>
     </Page>
   </Body>
 );

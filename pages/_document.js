@@ -15,7 +15,7 @@ export default class MyDocument extends Document {
         <Head>
           <title>My page</title>
           <link
-            href="https://fonts.googleapis.com/css?family=Spectral:400,400i,700,700i"
+            href="https://fonts.googleapis.com/css?family=Archivo+Black|Spectral:400,400i,700,700i"
             rel="stylesheet"
           />
           {this.props.styleTags}
