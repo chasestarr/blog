@@ -1,0 +1,40 @@
+.anchor {
+  color: var(--yellow-dark);
+}
+.anchor:hover {
+  color: var(--yellow-light);
+}
+
+.blockquote {
+  border-left: solid 2px var(--green-dark);
+  font-size: 14px;
+  margin-inline-start: 0;
+  padding-left: 8px;
+}
+
+.heading {
+  font-family: "Averia Serif Libre", cursive;
+}
+
+.img {
+  filter: grayscale(100%);
+  width: 100%;
+}
+.img:hover {
+  filter: unset;
+}
+
+.p > code {
+  /* border: solid 2px var(--red-dark); */
+  color: var(--blue-dark);
+  font-family: "Inconsolata", monospace;
+}
+
+.pre {
+  border-left: solid 2px var(--red-dark);
+  padding-left: 8px;
+}
+.pre > code {
+  font-family: "Inconsolata", monospace;
+  font-size: 12px;
+}

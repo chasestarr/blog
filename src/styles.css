@@ -1,0 +1,22 @@
+:root {
+  --mono-6: #232323;
+  --mono-5: #383838;
+  --mono-4: #595959;
+  --mono-3: #bdbdbd;
+  --mono-2: #e0e0e0;
+  --mono-1: #f2f2f2;
+  --green-dark: #608b4e;
+  --green-light: #8fbf7f;
+  --yellow-dark: #f8bc41;
+  --yellow-light: #f8c841;
+  --red-dark: #a94744;
+  --red-light: #e09690;
+  --blue-dark: #569cd6;
+  --blue-light: #9cdcfe;
+}
+
+body {
+  background-color: var(--mono-6);
+  font-family: "Spectral", serif;
+  margin: 0 auto;
+}
