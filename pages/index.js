@@ -23,7 +23,12 @@ export default function Index() {
       <ol className={styles.list}>
         <Item path="/about" title="About" />
         {blogposts.map(post => (
-          <Item path={post.path} title={post.title} date={post.date} />
+          <Item
+            key={post.path}
+            path={post.path}
+            title={post.title}
+            date={post.date}
+          />
         ))}
       </ol>
     </Layout>

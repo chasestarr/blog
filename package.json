@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next src",
-    "build": "node src/post-list.js && next build src",
-    "start": "next start src"
+    "dev": "next",
+    "build": "node post-list.js && next build",
+    "start": "next start"
   },
   "repository": {
     "type": "git",
