@@ -30,6 +30,12 @@
   margin-bottom: 24px;
 }
 
+@media screen and (max-width: 752px) {
+  .header {
+    padding: 8px 8px;
+  }
+}
+
 @media screen and (max-width: 720px) {
   .center {
     display: block;

@@ -36,6 +36,9 @@ export function H2(props) {
 }
 
 function Image(props) {
+  if (props.ignore) {
+    return <img {...props} />;
+  }
   return (
     <img
       style={{
