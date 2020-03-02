@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Layout from "../components/layout.js";
-import blogposts from "../__posts.js";
+import pages from "../__pages.js";
 import styles from "./index.module.css";
 
 function Item(props) {
@@ -21,8 +21,7 @@ export default function Index() {
   return (
     <Layout>
       <ol className={styles.list}>
-        <Item path="/about" title="About" />
-        {blogposts.map(post => (
+        {pages.map(post => (
           <Item
             key={post.path}
             path={post.path}

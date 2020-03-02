@@ -11,20 +11,20 @@ date: '2020-02-23',
 # Cel Genesis video release show
 
 Christina and I went to see an industrial/hardcore show last night. The performances from
-[Cel Genesis](https://www.instagram.com/cel_genesis/) and [Dock Hellis](https://www.instagram.com/dock.hellis/)
-were great. Cel's got the intense high-tempo energy and fascinating ear for piercing mechanical sound. When first
+[:Cel Genesis:] and [:Dock Hellis:]
+were great. ([Cel Genesis instagram](https://www.instagram.com/cel_genesis/), [Dock Hellis instagram](https://www.instagram.com/dock.hellis/)) Cel's got an intense high-tempo energy and fascinating ear for piercing mechanical sound. When first
 learning about the group, I came across their set on soundcloud and was attracted to the upfront percussion mix.
 
 <iframe
   width="100%"
   height="166"
   scrolling="no"
-  frameborder="no"
+  frameBorder="no"
   allow="autoplay"
   src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/746389462&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
 />
 
-The distinct visual perspective that them and other groups in the same Oakland hardcore scene put out caught my eye.
+The distinct visual perspective that them and other groups in the same [:Oakland:] hardcore scene put out caught my eye.
 Their instagram contains a sincere mix of meme reference, anime, geometric abstraction, and classic event poster
 composition with full lineup. I was hyped on the group and looked forward to checking them out live.
 
@@ -41,7 +41,7 @@ visibility but close proximity and can be well summed up in an image.
   <img style={{width: '33%'}} src="/images/dock-hellis-blue.png" ignore/>
 </div>
 
-Cel Genesis kicked off their set by playing a new music video. Some people in the venue held up a sheet in front of a
+Cel Genesis kicked off their set by playing a new [:music:] video. Some people in the venue held up a sheet in front of a
 projector so we could all view. The videos got a medical/lab theme that's eerie and offsetting. The band name is
 coincidentally shared with a shuttered [biotech startup](https://www.crunchbase.com/organization/cell-genesys). Maybe
 related? Their performance was hectic and loud with many people in the crowd moshing. Bright white strobe lights quickly
@@ -53,7 +53,7 @@ tough due to the distorition but it seemed like that rhythm came through.
   width="100%"
   height="400"
   src="https://www.youtube.com/embed/0nfNSOacIvs"
-  frameborder="0"
+  frameBorder="0"
   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-  allowfullscreen
+  allowFullScreen
 />

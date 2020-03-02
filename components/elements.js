@@ -37,7 +37,8 @@ export function H2(props) {
 
 function Image(props) {
   if (props.ignore) {
-    return <img {...props} />;
+    const { ignore, ...restProps } = props;
+    return <img {...restProps} />;
   }
   return (
     <img
@@ -60,6 +61,16 @@ function Pre(props) {
   return <pre className={styles.pre}>{props.children}</pre>;
 }
 
+function Edge(props) {
+  return (
+    <Link href={`/edges/${props.identifier}`}>
+      <a id={props.identifier} className={styles.edge}>
+        {props.label}
+      </a>
+    </Link>
+  );
+}
+
 export default {
   a: Anchor,
   blockquote: Blockquote,
@@ -67,5 +78,6 @@ export default {
   h2: H2,
   img: Image,
   p: Paragraph,
-  pre: Pre
+  pre: Pre,
+  Edge
 };

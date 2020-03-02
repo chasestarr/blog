@@ -4,7 +4,7 @@ export default Layout;
 
 # About Chase
 
-I'm a software engineer specializing in [user interface development](https://baseweb.design) that enjoys movies, art, and learning new things.
+I'm a software engineer specializing in [user interface development](https://baseweb.design) that enjoys [:movies:], [:art:], [:music:], and [:learning:] new things.
 
 - [chasestarr@gmail.com](mailto:chasestarr@gmail.com)
 - [github.com/chasestarr](https://github.com/chasestarr)

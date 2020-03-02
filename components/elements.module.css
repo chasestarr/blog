@@ -4,6 +4,12 @@
 .anchor:hover {
   color: var(--yellow-light);
 }
+.edge {
+  color: var(--blue-dark);
+}
+.edge:hover {
+  color: var(--blue-light);
+}
 
 .blockquote {
   border-left: solid 2px var(--green-dark);

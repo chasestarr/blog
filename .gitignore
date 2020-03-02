@@ -1,4 +1,5 @@
 .DS_Store
 node_modules/
 .next
-__posts.js
+__edges.js
+__pages.js
