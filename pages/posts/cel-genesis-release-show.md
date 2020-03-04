@@ -6,7 +6,7 @@ title: 'Cel Genesis video release show',
 date: '2020-02-23',
 };
 
-<img alt="roman dagger" src="/images/cel-genesis.png" headline />
+<img alt="cel genesis closeup" src="/images/cel-genesis.png" headline />
 
 # Cel Genesis video release show
 

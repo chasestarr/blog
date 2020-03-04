@@ -26,7 +26,7 @@ const metadata = files
       index
     };
   })
-  .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  .sort((a, b) => new Date(b.date) - new Date(a.date));
 
 fs.writeFileSync(
   path.resolve(__dirname, "__pages.js"),

@@ -23,15 +23,10 @@
 }
 
 .img {
-  filter: grayscale(100%);
   width: 100%;
-}
-.img:hover {
-  filter: unset;
 }
 
 .p > code {
-  /* border: solid 2px var(--red-dark); */
   color: var(--blue-dark);
   font-family: "Inconsolata", monospace;
 }
