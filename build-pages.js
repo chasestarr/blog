@@ -6,7 +6,7 @@ const utils = require("./build-utils.js");
 const POSTS = "./pages/posts";
 const files = fs
   .readdirSync(path.resolve(__dirname, POSTS))
-  .filter(file => file.endsWith(".md"));
+  .filter((file) => file.endsWith(".md"));
 
 const metadata = files
   .map((file, index) => {
@@ -23,7 +23,7 @@ const metadata = files
     return {
       ...meta,
       path: utils.routeFromPath(filepath),
-      index
+      index,
     };
   })
   .sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -34,8 +34,13 @@ fs.writeFileSync(
   {
     "title": "About",
     "path": "/about",
+    "index": -2,
+  },
+  {
+    "title": "Pattern Builder",
+    "path": "/pattern-builder",
     "index": -1,
   },
-  ${metadata.map(data => JSON.stringify(data, null, 2)).join(",\n")}
+  ${metadata.map((data) => JSON.stringify(data, null, 2)).join(",\n")}
 ];`
 );

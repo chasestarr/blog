@@ -13,7 +13,10 @@ export default function Layout(props) {
         </Link>
       </header>
       <main className={styles.center}>
-        <div className={styles.content}>
+        <div
+          style={{ width: props.contentWidth || "720px" }}
+          className={styles.content}
+        >
           <MDXProvider components={elements}>{props.children}</MDXProvider>
         </div>
       </main>
