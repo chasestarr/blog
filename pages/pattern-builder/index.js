@@ -171,26 +171,6 @@ function Editor({ pattern, onPatternChange }) {
   );
 }
 
-function paramToPattern(param) {
-  if (param) {
-    return param.split(",").map((row) => row.split("").map(Number));
-  }
-
-  return [
-    [1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-  ];
-}
-function patternToParam(pattern) {
-  return pattern.map((row) => row.join("")).join(",");
-}
-
 export default function Pattern({ initialPattern }) {
   const router = useRouter();
   const height = 200;
@@ -200,20 +180,23 @@ export default function Pattern({ initialPattern }) {
   const rows = React.useMemo(() => Array.from(new Array(height)), [height]);
   const columns = React.useMemo(() => Array.from(new Array(width)), [width]);
   const [pattern, setPattern] = React.useState(initialPattern);
+  const [rowOffset, setRowOffset] = React.useState(0);
 
   const canvas = React.useRef(null);
   React.useEffect(() => {
+    let rowCount = 0;
     if (canvas.current) {
       const ctx = canvas.current.getContext("2d");
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, canvas.current.width, canvas.current.height);
 
-      for (let y = 0; y < width; y++) {
+      for (let y = 0; y < height; y++) {
         const localy = y % pattern.length;
-        for (let x = 0; x < height; x++) {
+        for (let x = 0; x < width; x++) {
           let localx = 0;
           if (pattern[localy] && pattern[localy].length) {
-            localx = x % pattern[localy].length;
+            const length = pattern[localy].length;
+            localx = (x + rowCount * rowOffset) % length;
           }
           const on = pattern[localy][localx];
           if (on) {
@@ -221,14 +204,17 @@ export default function Pattern({ initialPattern }) {
             ctx.fillRect(x * size, y * size, size, size);
           }
         }
+        if (localy === pattern.length - 1) {
+          rowCount++;
+        }
       }
     }
-  }, [pattern]);
+  }, [pattern, rowOffset]);
 
   React.useEffect(() => {
     router.push({
       pathname: router.pathname,
-      query: { p: patternToParam(pattern) },
+      query: { p: pattern.map((row) => row.join("")).join(",") },
     });
   }, [pattern]);
 
@@ -250,12 +236,40 @@ export default function Pattern({ initialPattern }) {
           }}
         >
           <Editor pattern={pattern} onPatternChange={setPattern} />
+          <div>
+            <input
+              type="range"
+              id="row-offset"
+              min="0"
+              max={pattern[0].length - 1}
+              value={rowOffset}
+              onChange={(e) => setRowOffset(e.target.value)}
+              step="1"
+            />
+            <label htmlFor="range-offset">Row Offset {rowOffset}</label>
+          </div>
         </div>
       </div>
     </Layout>
   );
 }
 
-Pattern.getInitialProps = function ({ pathname, query }) {
+Pattern.getInitialProps = function ({ query }) {
+  function paramToPattern(param) {
+    if (param) {
+      return param.split(",").map((row) => row.split("").map(Number));
+    }
+
+    return [
+      [1, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+  }
   return { initialPattern: paramToPattern(query.p) };
 };
