@@ -61,6 +61,15 @@ function Editor({ pattern, onPatternChange }) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [matrix, addColumn, removeColumn, addRow, removeRow]);
 
+  function withinBounds(row, column, grid) {
+    return (
+      row >= 0 &&
+      row < grid.length &&
+      column >= 0 &&
+      column < matrix[row].length
+    );
+  }
+
   const [hover, setHover] = React.useState([-1, -1]);
   const [mouseHold, setMouseHold] = React.useState(false);
   const [updateQueue, setUpdateQueue] = React.useState([]);
@@ -75,29 +84,39 @@ function Editor({ pattern, onPatternChange }) {
     }, {});
   }, [updateQueue]);
 
-  function valueAtCoord(row, column) {
-    if (
-      updateDict[row] !== undefined &&
-      updateDict[row][column] !== undefined
-    ) {
-      return updateDict[row][column];
-    }
-    if (
-      row >= 0 &&
-      row < matrix.length &&
-      column >= 0 &&
-      column < matrix[column].length
-    ) {
-      return Boolean(matrix[row][column]);
-    }
-    return false;
-  }
+  const valueAtCoord = React.useCallback(
+    (row, column) => {
+      if (
+        updateDict[row] !== undefined &&
+        updateDict[row][column] !== undefined
+      ) {
+        return updateDict[row][column];
+      }
+      if (
+        row >= 0 &&
+        row < matrix.length &&
+        column >= 0 &&
+        column < matrix[row].length
+      ) {
+        return Boolean(matrix[row][column]);
+      }
+      return false;
+    },
+    [updateDict, matrix]
+  );
 
   return (
     <div
+      style={{
+        width: "500px",
+        overflow: "auto",
+      }}
       onMouseDown={() => {
         setMouseHold(true);
-        setUpdateQueue([[...hover, !valueAtCoord(...hover)]]);
+        const [row, column] = hover;
+        if (withinBounds(row, column, matrix)) {
+          setUpdateQueue([[row, column, !valueAtCoord(row, column)]]);
+        }
       }}
       onMouseUp={() => {
         setMouseHold(false);
