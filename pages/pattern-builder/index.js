@@ -1,95 +1,57 @@
 import * as React from "react";
 import Layout from "../../components/layout.js";
 
-function EditCell({ onClick, value, children }) {
-  const [hovered, setHovered] = React.useState(false);
-  let backgroundColor = "var(--mono-6)";
-  let color = "var(--mono-1)";
-  if (hovered) {
-    backgroundColor = "var(--blue-dark)";
-    color = "var(--mono-6)";
-  } else if (Boolean(value)) {
-    backgroundColor = "var(--blue-light)";
-    color = "var(--mono-6)";
-  }
-
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        backgroundColor,
-        color,
-        border: "solid 1px var(--mono-5)",
-        height: "36px",
-        outline: "none",
-        width: "36px",
-      }}
-    />
-  );
-}
-
-function EditPattern({ pattern, onPatternChange }) {
-  const [value, setValue] = React.useState(pattern);
+function Editor({ pattern, onPatternChange }) {
+  const [matrix, setMatrix] = React.useState(pattern);
   React.useEffect(() => {
-    const timeout = setTimeout(() => onPatternChange(value), 250);
+    const timeout = setTimeout(() => onPatternChange(matrix), 250);
     return () => clearTimeout(timeout);
-  }, [value]);
-
-  const toggleAtCoordinates = React.useCallback(
-    (row, column) => {
-      const next = [...value];
-      next[row][column] = next[row][column] ? 0 : 1;
-      setValue(next);
-    },
-    [value]
-  );
+  }, [matrix]);
 
   const addColumn = React.useCallback(() => {
-    const next = value.map((row) => [...row, 0]);
-    setValue(next);
-  }, [value]);
+    const next = matrix.map((row) => [...row, 0]);
+    setMatrix(next);
+  }, [matrix]);
 
   const removeColumn = React.useCallback(
     (index) => {
-      const next = value.map((row) =>
+      const next = matrix.map((row) =>
         row.filter((column, columnIndex) => columnIndex !== index)
       );
-      setValue(next);
+      setMatrix(next);
     },
-    [value]
+    [matrix]
   );
 
   const addRow = React.useCallback(() => {
-    const columnLength = value[0] ? value[0].length : 0;
+    const columnLength = matrix[0] ? matrix[0].length : 0;
     const row = Array.from(new Array(columnLength)).map(() => 0);
-    const next = [...value, row];
-    setValue(next);
-  }, [value]);
+    const next = [...matrix, row];
+    setMatrix(next);
+  }, [matrix]);
 
   const removeRow = React.useCallback(
     (index) => {
-      const next = value.filter((row, rowIndex) => rowIndex !== index);
+      const next = matrix.filter((row, rowIndex) => rowIndex !== index);
       if (next.length) {
-        setValue(next);
+        setMatrix(next);
       }
     },
-    [value]
+    [matrix]
   );
 
   React.useEffect(() => {
     function handleKeyDown(event) {
       if (event.keyCode === 78) {
         if (event.shiftKey) {
-          removeRow(value.length - 1);
+          removeRow(matrix.length - 1);
         } else {
           addRow();
         }
       }
       if (event.keyCode === 77) {
         if (event.shiftKey) {
-          removeColumn(value[0].length - 1);
+          removeColumn(matrix[0].length - 1);
         } else {
           addColumn();
         }
@@ -97,19 +59,92 @@ function EditPattern({ pattern, onPatternChange }) {
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [value, addColumn, removeColumn, addRow, removeRow]);
+  }, [matrix, addColumn, removeColumn, addRow, removeRow]);
+
+  const [hover, setHover] = React.useState([-1, -1]);
+  const [mouseHold, setMouseHold] = React.useState(false);
+  const [updateQueue, setUpdateQueue] = React.useState([]);
+  const updateDict = React.useMemo(() => {
+    return updateQueue.reduce((dict, [rowidx, colidx, value]) => {
+      if (!dict[rowidx]) {
+        dict[rowidx] = { [colidx]: value };
+      } else {
+        dict[rowidx][colidx] = value;
+      }
+      return dict;
+    }, {});
+  }, [updateQueue]);
+
+  function valueAtCoord(row, column) {
+    if (
+      updateDict[row] !== undefined &&
+      updateDict[row][column] !== undefined
+    ) {
+      return updateDict[row][column];
+    }
+    if (
+      row >= 0 &&
+      row < matrix.length &&
+      column >= 0 &&
+      column < matrix[column].length
+    ) {
+      return Boolean(matrix[row][column]);
+    }
+    return false;
+  }
 
   return (
-    <div>
-      {pattern.map((row, rowIndex) => {
+    <div
+      onMouseDown={() => {
+        setMouseHold(true);
+        setUpdateQueue([[...hover, !valueAtCoord(...hover)]]);
+      }}
+      onMouseUp={() => {
+        setMouseHold(false);
+        if (updateQueue.length) {
+          const next = [...matrix];
+          updateQueue.forEach(([row, column, value]) => {
+            next[row][column] = value ? 1 : 0;
+          });
+          setMatrix(next);
+        }
+        setUpdateQueue([]);
+      }}
+    >
+      {matrix.map((row, rowidx) => {
         return (
-          <div style={{ display: "flex" }}>
-            {row.map((cell, columnIndex) => (
-              <EditCell
-                onClick={() => toggleAtCoordinates(rowIndex, columnIndex)}
-                value={cell}
-              />
-            ))}
+          <div style={{ display: "flex", height: "36px" }}>
+            {row.map((_, colidx) => {
+              const hovered = rowidx === hover[0] && colidx === hover[1];
+              const value = valueAtCoord(rowidx, colidx);
+              return (
+                <button
+                  onMouseEnter={() => {
+                    setHover([rowidx, colidx]);
+                    if (mouseHold) {
+                      setUpdateQueue([
+                        ...updateQueue,
+                        [
+                          rowidx,
+                          colidx,
+                          updateQueue[updateQueue.length - 1][2],
+                        ],
+                      ]);
+                    }
+                  }}
+                  onMouseLeave={() => setHover([-1, -1])}
+                  style={{
+                    backgroundColor: value
+                      ? "var(--blue-light)"
+                      : "var(--mono-6)",
+                    boxSizing: "border-box",
+                    border: `solid 1px var(--mono-${hovered ? 4 : 5})`,
+                    outline: "none",
+                    width: "36px",
+                  }}
+                />
+              );
+            })}
           </div>
         );
       })}
@@ -170,7 +205,7 @@ export default function Pattern() {
             width: "400px",
           }}
         >
-          <EditPattern pattern={pattern} onPatternChange={setPattern} />
+          <Editor pattern={pattern} onPatternChange={setPattern} />
         </div>
       </div>
     </Layout>
