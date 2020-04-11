@@ -3,3 +3,4 @@ node_modules/
 .next
 __edges.js
 __pages.js
+!.npmrc
