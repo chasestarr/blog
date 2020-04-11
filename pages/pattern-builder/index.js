@@ -107,10 +107,6 @@ function Editor({ pattern, onPatternChange }) {
 
   return (
     <div
-      style={{
-        width: "500px",
-        overflow: "auto",
-      }}
       onMouseDown={() => {
         setMouseHold(true);
         const [row, column] = hover;
@@ -137,31 +133,33 @@ function Editor({ pattern, onPatternChange }) {
               const hovered = rowidx === hover[0] && colidx === hover[1];
               const value = valueAtCoord(rowidx, colidx);
               return (
-                <button
-                  onMouseEnter={() => {
-                    setHover([rowidx, colidx]);
-                    if (mouseHold) {
-                      setUpdateQueue([
-                        ...updateQueue,
-                        [
-                          rowidx,
-                          colidx,
-                          updateQueue[updateQueue.length - 1][2],
-                        ],
-                      ]);
-                    }
-                  }}
-                  onMouseLeave={() => setHover([-1, -1])}
-                  style={{
-                    backgroundColor: value
-                      ? "var(--blue-light)"
-                      : "var(--mono-6)",
-                    boxSizing: "border-box",
-                    border: `solid 1px var(--mono-${hovered ? 4 : 5})`,
-                    outline: "none",
-                    width: "36px",
-                  }}
-                />
+                <div>
+                  <button
+                    onMouseEnter={() => {
+                      setHover([rowidx, colidx]);
+                      if (mouseHold) {
+                        setUpdateQueue([
+                          ...updateQueue,
+                          [
+                            rowidx,
+                            colidx,
+                            updateQueue[updateQueue.length - 1][2],
+                          ],
+                        ]);
+                      }
+                    }}
+                    onMouseLeave={() => setHover([-1, -1])}
+                    style={{
+                      backgroundColor: value
+                        ? "var(--blue-light)"
+                        : "var(--mono-6)",
+                      border: `solid 1px var(--mono-${hovered ? 4 : 5})`,
+                      height: "36px",
+                      outline: "none",
+                      width: "36px",
+                    }}
+                  />
+                </div>
               );
             })}
           </div>
@@ -221,7 +219,9 @@ export default function Pattern() {
             color: "var(--mono-1)",
             flexGrow: 1,
             padding: "16px",
-            width: "400px",
+            maxHeight: "780px",
+            maxWidth: "800px",
+            overflow: "scroll",
           }}
         >
           <Editor pattern={pattern} onPatternChange={setPattern} />
