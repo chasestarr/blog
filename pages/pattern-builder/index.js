@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useRouter } from "next/router";
+
 import Layout from "../../components/layout.js";
 
 function Editor({ pattern, onPatternChange }) {
@@ -128,12 +130,12 @@ function Editor({ pattern, onPatternChange }) {
     >
       {matrix.map((row, rowidx) => {
         return (
-          <div style={{ display: "flex", height: "36px" }}>
+          <div key={rowidx} style={{ display: "flex", height: "36px" }}>
             {row.map((_, colidx) => {
               const hovered = rowidx === hover[0] && colidx === hover[1];
               const value = valueAtCoord(rowidx, colidx);
               return (
-                <div>
+                <div key={colidx}>
                   <button
                     onMouseEnter={() => {
                       setHover([rowidx, colidx]);
@@ -169,14 +171,12 @@ function Editor({ pattern, onPatternChange }) {
   );
 }
 
-export default function Pattern() {
-  const height = 200;
-  const width = 200;
-  const size = 4;
+function paramToPattern(param) {
+  if (param) {
+    return param.split(",").map((row) => row.split("").map(Number));
+  }
 
-  const rows = React.useMemo(() => Array.from(new Array(height)), [height]);
-  const columns = React.useMemo(() => Array.from(new Array(width)), [width]);
-  const [pattern, setPattern] = React.useState([
+  return [
     [1, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
@@ -185,7 +185,21 @@ export default function Pattern() {
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-  ]);
+  ];
+}
+function patternToParam(pattern) {
+  return pattern.map((row) => row.join("")).join(",");
+}
+
+export default function Pattern({ initialPattern }) {
+  const router = useRouter();
+  const height = 200;
+  const width = 200;
+  const size = 4;
+
+  const rows = React.useMemo(() => Array.from(new Array(height)), [height]);
+  const columns = React.useMemo(() => Array.from(new Array(width)), [width]);
+  const [pattern, setPattern] = React.useState(initialPattern);
 
   const canvas = React.useRef(null);
   React.useEffect(() => {
@@ -211,6 +225,13 @@ export default function Pattern() {
     }
   }, [pattern]);
 
+  React.useEffect(() => {
+    router.push({
+      pathname: router.pathname,
+      query: { p: patternToParam(pattern) },
+    });
+  }, [pattern]);
+
   return (
     <Layout contentWidth="90%">
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -234,3 +255,7 @@ export default function Pattern() {
     </Layout>
   );
 }
+
+Pattern.getInitialProps = function ({ pathname, query }) {
+  return { initialPattern: paramToPattern(query.p) };
+};
