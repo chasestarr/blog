@@ -151,7 +151,7 @@ function Editor({ pattern, onPatternChange }) {
                     onMouseLeave={() => setHover([-1, -1])}
                     style={{
                       backgroundColor: value
-                        ? "var(--blue-light)"
+                        ? "var(--mono-1)"
                         : "var(--mono-6)",
                       border: `solid 1px var(--mono-${hovered ? 4 : 5})`,
                       height: "36px",
@@ -172,6 +172,7 @@ function Editor({ pattern, onPatternChange }) {
 export default function Pattern() {
   const height = 200;
   const width = 200;
+  const size = 4;
 
   const rows = React.useMemo(() => Array.from(new Array(height)), [height]);
   const columns = React.useMemo(() => Array.from(new Array(width)), [width]);
@@ -186,32 +187,35 @@ export default function Pattern() {
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const canvas = React.useRef(null);
+  React.useEffect(() => {
+    if (canvas.current) {
+      const ctx = canvas.current.getContext("2d");
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.current.width, canvas.current.height);
+
+      for (let y = 0; y < width; y++) {
+        const localy = y % pattern.length;
+        for (let x = 0; x < height; x++) {
+          let localx = 0;
+          if (pattern[localy] && pattern[localy].length) {
+            localx = x % pattern[localy].length;
+          }
+          const on = pattern[localy][localx];
+          if (on) {
+            ctx.fillStyle = "white";
+            ctx.fillRect(x * size, y * size, size, size);
+          }
+        }
+      }
+    }
+  }, [pattern]);
+
   return (
     <Layout contentWidth="90%">
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div>
-          {rows.map((_, row) => {
-            const localRow = row % pattern.length;
-            return (
-              <div style={{ height: "4px", display: "flex" }}>
-                {columns.map((_, column) => {
-                  let localColumn = 0;
-                  if (pattern[0] && pattern[0].length) {
-                    localColumn = column % pattern[0].length;
-                  }
-                  const on = pattern[localRow][localColumn];
-                  return (
-                    <div
-                      style={{
-                        backgroundColor: on ? "var(--blue-light)" : undefined,
-                        width: "4px",
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            );
-          })}
+          <canvas ref={canvas} height={height * size} width={width * size} />
         </div>
         <div
           style={{
