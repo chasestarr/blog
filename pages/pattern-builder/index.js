@@ -3,75 +3,32 @@ import { useRouter } from "next/router";
 
 import Layout from "../../components/layout.js";
 
+function columnLength(pattern) {
+  return pattern[0] ? pattern[0].length : 0;
+}
+function addRow(pattern) {
+  const row = Array.from(new Array(columnLength(pattern))).map(() => 0);
+  return [...pattern, row];
+}
+function addColumn(pattern) {
+  return pattern.map((row) => [...row, 0]);
+}
+function removeRow(pattern, index) {
+  return pattern.filter((row, rowIndex) => rowIndex !== index);
+}
+function removeColumn(pattern, index) {
+  return pattern.map((row) => row.filter((col, colidx) => colidx !== index));
+}
+function isInBounds(pattern, row, column) {
+  return (
+    row >= 0 &&
+    row < pattern.length &&
+    column >= 0 &&
+    column < pattern[row].length
+  );
+}
+
 function Editor({ pattern, onPatternChange }) {
-  const [matrix, setMatrix] = React.useState(pattern);
-  React.useEffect(() => {
-    const timeout = setTimeout(() => onPatternChange(matrix), 250);
-    return () => clearTimeout(timeout);
-  }, [matrix]);
-
-  const addColumn = React.useCallback(() => {
-    const next = matrix.map((row) => [...row, 0]);
-    setMatrix(next);
-  }, [matrix]);
-
-  const removeColumn = React.useCallback(
-    (index) => {
-      const next = matrix.map((row) =>
-        row.filter((column, columnIndex) => columnIndex !== index)
-      );
-      setMatrix(next);
-    },
-    [matrix]
-  );
-
-  const addRow = React.useCallback(() => {
-    const columnLength = matrix[0] ? matrix[0].length : 0;
-    const row = Array.from(new Array(columnLength)).map(() => 0);
-    const next = [...matrix, row];
-    setMatrix(next);
-  }, [matrix]);
-
-  const removeRow = React.useCallback(
-    (index) => {
-      const next = matrix.filter((row, rowIndex) => rowIndex !== index);
-      if (next.length) {
-        setMatrix(next);
-      }
-    },
-    [matrix]
-  );
-
-  React.useEffect(() => {
-    function handleKeyDown(event) {
-      if (event.keyCode === 78) {
-        if (event.shiftKey) {
-          removeRow(matrix.length - 1);
-        } else {
-          addRow();
-        }
-      }
-      if (event.keyCode === 77) {
-        if (event.shiftKey) {
-          removeColumn(matrix[0].length - 1);
-        } else {
-          addColumn();
-        }
-      }
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [matrix, addColumn, removeColumn, addRow, removeRow]);
-
-  function withinBounds(row, column, grid) {
-    return (
-      row >= 0 &&
-      row < grid.length &&
-      column >= 0 &&
-      column < matrix[row].length
-    );
-  }
-
   const [hover, setHover] = React.useState([-1, -1]);
   const [mouseHold, setMouseHold] = React.useState(false);
   const [updateQueue, setUpdateQueue] = React.useState([]);
@@ -94,41 +51,36 @@ function Editor({ pattern, onPatternChange }) {
       ) {
         return updateDict[row][column];
       }
-      if (
-        row >= 0 &&
-        row < matrix.length &&
-        column >= 0 &&
-        column < matrix[row].length
-      ) {
-        return Boolean(matrix[row][column]);
+      if (isInBounds(pattern, row, column)) {
+        return Boolean(pattern[row][column]);
       }
       return false;
     },
-    [updateDict, matrix]
+    [updateDict, pattern]
   );
 
   return (
     <div
       onMouseDown={() => {
-        setMouseHold(true);
         const [row, column] = hover;
-        if (withinBounds(row, column, matrix)) {
+        setMouseHold(true);
+        if (isInBounds(pattern, row, column)) {
           setUpdateQueue([[row, column, !valueAtCoord(row, column)]]);
         }
       }}
       onMouseUp={() => {
         setMouseHold(false);
         if (updateQueue.length) {
-          const next = [...matrix];
+          const next = [...pattern];
           updateQueue.forEach(([row, column, value]) => {
             next[row][column] = value ? 1 : 0;
           });
-          setMatrix(next);
+          onPatternChange(next);
         }
         setUpdateQueue([]);
       }}
     >
-      {matrix.map((row, rowidx) => {
+      {pattern.map((row, rowidx) => {
         return (
           <div key={rowidx} style={{ display: "flex", height: "36px" }}>
             {row.map((_, colidx) => {
@@ -155,7 +107,9 @@ function Editor({ pattern, onPatternChange }) {
                       backgroundColor: value
                         ? "var(--mono-1)"
                         : "var(--mono-6)",
-                      border: `solid 1px var(--mono-${hovered ? 4 : 5})`,
+                      border: `solid 1px var(--mono-${
+                        hovered ? (value ? 3 : 4) : 5
+                      })`,
                       height: "36px",
                       outline: "none",
                       width: "36px",
@@ -181,6 +135,31 @@ export default function Pattern({ initialPattern }) {
   const columns = React.useMemo(() => Array.from(new Array(width)), [width]);
   const [pattern, setPattern] = React.useState(initialPattern);
   const [rowOffset, setRowOffset] = React.useState(0);
+
+  React.useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.keyCode === 32) {
+        event.preventDefault();
+        setPattern(pattern.map((row) => row.map((cell) => (cell ? 0 : 1))));
+      }
+      if (event.keyCode === 78) {
+        if (event.shiftKey) {
+          setPattern(removeRow(pattern, pattern.length - 1));
+        } else {
+          setPattern(addRow(pattern));
+        }
+      }
+      if (event.keyCode === 77) {
+        if (event.shiftKey) {
+          setPattern(removeColumn(pattern, columnLength(pattern) - 1));
+        } else {
+          setPattern(addColumn(pattern));
+        }
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [pattern]);
 
   const canvas = React.useRef(null);
   React.useEffect(() => {
@@ -246,7 +225,7 @@ export default function Pattern({ initialPattern }) {
               onChange={(e) => setRowOffset(e.target.value)}
               step="1"
             />
-            <label htmlFor="range-offset">Row Offset {rowOffset}</label>
+            <label htmlFor="row-offset">Row Offset {rowOffset}</label>
           </div>
         </div>
       </div>
