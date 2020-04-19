@@ -27,6 +27,12 @@ function isInBounds(pattern, row, column) {
     column < pattern[row].length
   );
 }
+function stringToPattern(patternString) {
+  return patternString.split(",").map((row) => row.split("").map(Number));
+}
+function patternToString(p) {
+  return p.map((r) => r.join("")).join(",");
+}
 
 function Editor({ pattern, onPatternChange }) {
   const [hover, setHover] = React.useState([-1, -1]);
@@ -59,8 +65,14 @@ function Editor({ pattern, onPatternChange }) {
     [updateDict, pattern]
   );
 
-  const patternWidth = React.useMemo(() => columnLength(pattern), [pattern]);
-  const buttonSize = 300 / patternWidth;
+  const buttonSize = React.useMemo(() => {
+    const width = columnLength(pattern);
+    const height = pattern.length;
+    if (height > width) {
+      return 300 / height;
+    }
+    return 300 / width;
+  }, [pattern]);
 
   return (
     <div
@@ -85,11 +97,8 @@ function Editor({ pattern, onPatternChange }) {
     >
       {pattern.map((row, rowidx) => {
         return (
-          <div>
-            <div
-              key={rowidx}
-              style={{ display: "flex", height: `${buttonSize}px` }}
-            >
+          <div key={rowidx}>
+            <div style={{ display: "flex", height: `${buttonSize}px` }}>
               {row.map((_, colidx) => {
                 const hovered = rowidx === hover[0] && colidx === hover[1];
                 const value = valueAtCoord(rowidx, colidx);
@@ -134,7 +143,6 @@ function Editor({ pattern, onPatternChange }) {
           </div>
         );
       })}
-      {patternWidth} x {pattern.length}
     </div>
   );
 }
@@ -159,14 +167,20 @@ export default function Pattern({ initialPattern }) {
       }
       if (event.keyCode === 78) {
         if (event.shiftKey) {
-          setPattern(removeRow(pattern, pattern.length - 1));
+          const length = pattern.length;
+          if (length > 1) {
+            setPattern(removeRow(pattern, length - 1));
+          }
         } else {
           setPattern(addRow(pattern));
         }
       }
       if (event.keyCode === 77) {
         if (event.shiftKey) {
-          setPattern(removeColumn(pattern, columnLength(pattern) - 1));
+          const length = columnLength(pattern);
+          if (length > 1) {
+            setPattern(removeColumn(pattern, length - 1));
+          }
         } else {
           setPattern(addColumn(pattern));
         }
@@ -222,7 +236,7 @@ export default function Pattern({ initialPattern }) {
   React.useEffect(() => {
     router.push({
       pathname: router.pathname,
-      query: { p: pattern.map((row) => row.join("")).join(",") },
+      query: { p: patternToString(pattern) },
     });
   }, [pattern]);
 
@@ -249,6 +263,9 @@ export default function Pattern({ initialPattern }) {
         >
           <Editor pattern={pattern} onPatternChange={setPattern} />
           <div>
+            {columnLength(pattern)} x {pattern.length}
+          </div>
+          <div>
             <input
               type="range"
               id="size"
@@ -265,7 +282,7 @@ export default function Pattern({ initialPattern }) {
               type="range"
               id="row-offset"
               min="0"
-              max={pattern[0].length - 1}
+              max={columnLength(pattern) - 1}
               value={rowOffset}
               onChange={(e) => setRowOffset(e.target.value)}
               step="1"
@@ -281,7 +298,7 @@ export default function Pattern({ initialPattern }) {
 Pattern.getInitialProps = function ({ query }) {
   function paramToPattern(param) {
     if (param) {
-      return param.split(",").map((row) => row.split("").map(Number));
+      return stringToPattern(param);
     }
 
     return [
