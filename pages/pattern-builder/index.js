@@ -59,6 +59,9 @@ function Editor({ pattern, onPatternChange }) {
     [updateDict, pattern]
   );
 
+  const patternWidth = React.useMemo(() => columnLength(pattern), [pattern]);
+  const buttonSize = 300 / patternWidth;
+
   return (
     <div
       onMouseDown={() => {
@@ -82,45 +85,56 @@ function Editor({ pattern, onPatternChange }) {
     >
       {pattern.map((row, rowidx) => {
         return (
-          <div key={rowidx} style={{ display: "flex", height: "36px" }}>
-            {row.map((_, colidx) => {
-              const hovered = rowidx === hover[0] && colidx === hover[1];
-              const value = valueAtCoord(rowidx, colidx);
-              return (
-                <div key={colidx}>
+          <div>
+            <div
+              key={rowidx}
+              style={{ display: "flex", height: `${buttonSize}px` }}
+            >
+              {row.map((_, colidx) => {
+                const hovered = rowidx === hover[0] && colidx === hover[1];
+                const value = valueAtCoord(rowidx, colidx);
+                return (
                   <button
+                    key={colidx}
+                    onMouseOver={() => setHover([rowidx, colidx])}
+                    onMouseLeave={() => setHover([-1, -1])}
                     onMouseEnter={() => {
                       setHover([rowidx, colidx]);
                       if (mouseHold) {
-                        setUpdateQueue([
-                          ...updateQueue,
-                          [
-                            rowidx,
-                            colidx,
-                            updateQueue[updateQueue.length - 1][2],
-                          ],
-                        ]);
+                        if (updateQueue.length) {
+                          setUpdateQueue([
+                            ...updateQueue,
+                            [
+                              rowidx,
+                              colidx,
+                              updateQueue[updateQueue.length - 1][2],
+                            ],
+                          ]);
+                        } else {
+                          setUpdateQueue([[rowidx, colidx, !Boolean(value)]]);
+                        }
                       }
                     }}
-                    onMouseLeave={() => setHover([-1, -1])}
                     style={{
                       backgroundColor: value
                         ? "var(--mono-1)"
                         : "var(--mono-6)",
-                      border: `solid 1px var(--mono-${
+                      border: "none",
+                      outline: `solid 1px var(--mono-${
                         hovered ? (value ? 3 : 4) : 5
                       })`,
-                      height: "36px",
-                      outline: "none",
-                      width: "36px",
+                      padding: 0,
+                      height: `${buttonSize}px`,
+                      width: `${buttonSize}px`,
                     }}
                   />
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         );
       })}
+      {patternWidth} x {pattern.length}
     </div>
   );
 }
@@ -135,6 +149,7 @@ export default function Pattern({ initialPattern }) {
   const [pattern, setPattern] = React.useState(initialPattern);
   const [rowOffset, setRowOffset] = React.useState(0);
   const [size, setSize] = React.useState(4);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   React.useEffect(() => {
     function handleKeyDown(event) {
@@ -156,12 +171,26 @@ export default function Pattern({ initialPattern }) {
           setPattern(addColumn(pattern));
         }
       }
+      if (event.keyCode === 67) {
+        if (event.shiftKey) {
+          setPattern(pattern.map((r) => r.map(() => 0)));
+        }
+      }
+      if (event.keyCode === 191) {
+        setDrawerOpen((prev) => !prev);
+      }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [pattern]);
 
   const canvas = React.useRef(null);
+  const [canvasWidth, setCanvasWidth] = React.useState(0);
+  const [canvasHeight, setCanvasHeight] = React.useState(0);
+  React.useEffect(() => {
+    setCanvasWidth(document.documentElement.clientWidth);
+    setCanvasHeight(document.documentElement.clientHeight);
+  }, []);
   React.useEffect(() => {
     let rowCount = 0;
     if (canvas.current) {
@@ -188,7 +217,7 @@ export default function Pattern({ initialPattern }) {
         }
       }
     }
-  }, [pattern, rowOffset, size]);
+  }, [pattern, rowOffset, size, canvasWidth, canvasHeight]);
 
   React.useEffect(() => {
     router.push({
@@ -198,20 +227,24 @@ export default function Pattern({ initialPattern }) {
   }, [pattern]);
 
   return (
-    <Layout contentWidth="90%">
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>
-          <canvas ref={canvas} height={height} width={width} />
-        </div>
+    <div
+      style={{
+        fontFamily: '"Inconsolata", monospace',
+        color: "var(--mono-1)",
+      }}
+    >
+      <canvas ref={canvas} width={canvasWidth} height={canvasHeight} />
+      {drawerOpen && (
         <div
           style={{
-            backgroundColor: "var(--mono-5)",
-            color: "var(--mono-1)",
-            flexGrow: 1,
             padding: "16px",
-            maxHeight: "780px",
-            maxWidth: "800px",
-            overflow: "scroll",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            minHeight: "400px",
+            height: "calc(100% - 32px)",
+            backgroundColor: "var(--mono-5)",
+            width: "300px",
           }}
         >
           <Editor pattern={pattern} onPatternChange={setPattern} />
@@ -240,8 +273,8 @@ export default function Pattern({ initialPattern }) {
             <label htmlFor="row-offset">Row Offset {rowOffset}</label>
           </div>
         </div>
-      </div>
-    </Layout>
+      )}
+    </div>
   );
 }
 
