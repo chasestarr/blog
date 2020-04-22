@@ -34,7 +34,7 @@ function patternToString(p) {
   return p.map((r) => r.join("")).join(",");
 }
 
-function Editor({ pattern, onPatternChange }) {
+function Editor({ gridWidth, pattern, onPatternChange }) {
   const [hover, setHover] = React.useState([-1, -1]);
   const [mouseHold, setMouseHold] = React.useState(false);
   const [updateQueue, setUpdateQueue] = React.useState([]);
@@ -69,10 +69,10 @@ function Editor({ pattern, onPatternChange }) {
     const width = columnLength(pattern);
     const height = pattern.length;
     if (height > width) {
-      return 300 / height;
+      return gridWidth / height;
     }
-    return 300 / width;
-  }, [pattern]);
+    return gridWidth / width;
+  }, [gridWidth, pattern]);
 
   return (
     <div
@@ -147,10 +147,60 @@ function Editor({ pattern, onPatternChange }) {
   );
 }
 
+function Resize({ onChange }) {
+  const [hover, setHover] = React.useState(false);
+  const [resizing, setResizing] = React.useState(false);
+  const [start, setStart] = React.useState(0);
+  const [end, setEnd] = React.useState(0);
+
+  React.useLayoutEffect(() => {
+    function handleMouseMove(event) {
+      event.preventDefault();
+      setEnd(event.clientX);
+    }
+    if (resizing) {
+      document.addEventListener("mousemove", handleMouseMove);
+    }
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [resizing]);
+
+  return (
+    <div
+      role="presentation"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onMouseDown={(event) => {
+        const rect = event.target.getBoundingClientRect();
+        const x = rect.left + window.scrollX;
+        setResizing(true);
+        setStart(x);
+        setEnd(x);
+      }}
+      onMouseUp={() => {
+        onChange((end - start) * -1);
+        setResizing(false);
+        setStart(0);
+        setEnd(0);
+      }}
+      style={{
+        position: "absolute",
+        left: -2 + end - start,
+        backgroundColor: hover || resizing ? "var(--blue-dark)" : null,
+        width: "4px",
+        height: "100%",
+        cursor: "col-resize",
+      }}
+    />
+  );
+}
+
 export default function Pattern({ initialPattern }) {
   const router = useRouter();
   const height = 600;
   const width = 600;
+  const DRAWER_MIN_WIDTH = 300;
 
   const rows = React.useMemo(() => Array.from(new Array(height)), [height]);
   const columns = React.useMemo(() => Array.from(new Array(width)), [width]);
@@ -158,6 +208,7 @@ export default function Pattern({ initialPattern }) {
   const [rowOffset, setRowOffset] = React.useState(0);
   const [size, setSize] = React.useState(4);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [drawerResizeOffset, setDrawerResizeOffset] = React.useState(0);
 
   React.useEffect(() => {
     function handleKeyDown(event) {
@@ -251,43 +302,54 @@ export default function Pattern({ initialPattern }) {
       {drawerOpen && (
         <div
           style={{
-            padding: "16px",
             position: "absolute",
             top: 0,
             right: 0,
             minHeight: "400px",
-            height: "calc(100% - 32px)",
+            height: "100%",
             backgroundColor: "var(--mono-5)",
-            width: "300px",
+            width: `${DRAWER_MIN_WIDTH + drawerResizeOffset}px`,
           }}
         >
-          <Editor pattern={pattern} onPatternChange={setPattern} />
-          <div>
-            {columnLength(pattern)} x {pattern.length}
-          </div>
-          <div>
-            <input
-              type="range"
-              id="size"
-              min="4"
-              max="40"
-              value={size}
-              onChange={(e) => setSize(e.target.value)}
-              step="1"
+          <Resize
+            onChange={(offset) =>
+              setDrawerResizeOffset(Math.max(0, drawerResizeOffset + offset))
+            }
+          />
+
+          <div style={{ padding: "16px" }}>
+            <Editor
+              pattern={pattern}
+              onPatternChange={setPattern}
+              gridWidth={DRAWER_MIN_WIDTH + drawerResizeOffset - 32}
             />
-            <label htmlFor="size">Size {size}</label>
-          </div>
-          <div>
-            <input
-              type="range"
-              id="row-offset"
-              min="0"
-              max={columnLength(pattern) - 1}
-              value={rowOffset}
-              onChange={(e) => setRowOffset(e.target.value)}
-              step="1"
-            />
-            <label htmlFor="row-offset">Row Offset {rowOffset}</label>
+            <div>
+              {columnLength(pattern)} x {pattern.length}
+            </div>
+            <div>
+              <input
+                type="range"
+                id="size"
+                min="4"
+                max="40"
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+                step="1"
+              />
+              <label htmlFor="size">Size {size}</label>
+            </div>
+            <div>
+              <input
+                type="range"
+                id="row-offset"
+                min="0"
+                max={columnLength(pattern) - 1}
+                value={rowOffset}
+                onChange={(e) => setRowOffset(e.target.value)}
+                step="1"
+              />
+              <label htmlFor="row-offset">Row Offset {rowOffset}</label>
+            </div>
           </div>
         </div>
       )}
