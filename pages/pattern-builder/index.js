@@ -319,6 +319,17 @@ export default function Pattern({ initialPattern }) {
       }}
     >
       <canvas ref={canvas} width={canvasWidth} height={canvasHeight} />
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: drawerOpen ? `${DRAWER_MIN_WIDTH + drawerResizeOffset}px` : 0,
+        }}
+      >
+        <button onClick={() => setDrawerOpen((prev) => !prev)}>
+          {drawerOpen ? "Close Editor" : "Open Editor"}
+        </button>
+      </div>
       {drawerOpen && (
         <div
           style={{
