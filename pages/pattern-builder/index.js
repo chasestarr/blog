@@ -210,6 +210,26 @@ export default function Pattern({ initialPattern }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [drawerResizeOffset, setDrawerResizeOffset] = React.useState(0);
 
+  const handleAddRow = React.useCallback(() => {
+    setPattern(addRow(pattern));
+  }, [pattern, setPattern]);
+  const handleRemoveRow = React.useCallback(() => {
+    const length = pattern.length;
+    if (length > 1) {
+      setPattern(removeRow(pattern, length - 1));
+    }
+  }, [pattern, setPattern]);
+
+  const handleAddColumn = React.useCallback(() => {
+    setPattern(addColumn(pattern));
+  }, [pattern, setPattern]);
+  const handleRemoveColumn = React.useCallback(() => {
+    const length = columnLength(pattern);
+    if (length > 1) {
+      setPattern(removeColumn(pattern, length - 1));
+    }
+  }, [pattern, setPattern]);
+
   React.useEffect(() => {
     function handleKeyDown(event) {
       if (event.keyCode === 32) {
@@ -218,22 +238,16 @@ export default function Pattern({ initialPattern }) {
       }
       if (event.keyCode === 78) {
         if (event.shiftKey) {
-          const length = pattern.length;
-          if (length > 1) {
-            setPattern(removeRow(pattern, length - 1));
-          }
+          handleRemoveRow();
         } else {
-          setPattern(addRow(pattern));
+          handleAddRow();
         }
       }
       if (event.keyCode === 77) {
         if (event.shiftKey) {
-          const length = columnLength(pattern);
-          if (length > 1) {
-            setPattern(removeColumn(pattern, length - 1));
-          }
+          handleRemoveColumn();
         } else {
-          setPattern(addColumn(pattern));
+          handleAddColumn();
         }
       }
       if (event.keyCode === 67) {
@@ -247,7 +261,13 @@ export default function Pattern({ initialPattern }) {
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [pattern]);
+  }, [
+    pattern,
+    handleAddRow,
+    handleRemoveRow,
+    handleAddColumn,
+    handleRemoveColumn,
+  ]);
 
   const canvas = React.useRef(null);
   const [canvasWidth, setCanvasWidth] = React.useState(0);
@@ -317,38 +337,61 @@ export default function Pattern({ initialPattern }) {
             }
           />
 
-          <div style={{ padding: "16px" }}>
-            <Editor
-              pattern={pattern}
-              onPatternChange={setPattern}
-              gridWidth={DRAWER_MIN_WIDTH + drawerResizeOffset - 32}
-            />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "calc(100% - 32px)",
+              padding: "16px",
+            }}
+          >
             <div>
-              {columnLength(pattern)} x {pattern.length}
-            </div>
-            <div>
-              <input
-                type="range"
-                id="size"
-                min="4"
-                max="40"
-                value={size}
-                onChange={(e) => setSize(e.target.value)}
-                step="1"
+              <Editor
+                pattern={pattern}
+                onPatternChange={setPattern}
+                gridWidth={DRAWER_MIN_WIDTH + drawerResizeOffset - 32}
               />
-              <label htmlFor="size">Size {size}</label>
             </div>
+
             <div>
-              <input
-                type="range"
-                id="row-offset"
-                min="0"
-                max={columnLength(pattern) - 1}
-                value={rowOffset}
-                onChange={(e) => setRowOffset(e.target.value)}
-                step="1"
-              />
-              <label htmlFor="row-offset">Row Offset {rowOffset}</label>
+              <div>
+                {columnLength(pattern)} x {pattern.length}
+              </div>
+              <div>
+                <input
+                  type="range"
+                  id="size"
+                  min="4"
+                  max="40"
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  step="1"
+                />
+                <label htmlFor="size">Size {size}</label>
+              </div>
+              <div>
+                <input
+                  type="range"
+                  id="row-offset"
+                  min="0"
+                  max={columnLength(pattern) - 1}
+                  value={rowOffset}
+                  onChange={(e) => setRowOffset(e.target.value)}
+                  step="1"
+                />
+                <label htmlFor="row-offset">Row Offset {rowOffset}</label>
+              </div>
+              <div>
+                <button onClick={() => handleRemoveRow()}>-</button>
+                <button onClick={() => handleAddRow()}>+</button>
+                <label>Row Count {pattern.length}</label>
+              </div>
+              <div>
+                <button onClick={() => handleRemoveColumn()}>-</button>
+                <button onClick={() => handleAddColumn()}>+</button>
+                <label>Column Count {columnLength(pattern)}</label>
+              </div>
             </div>
           </div>
         </div>
