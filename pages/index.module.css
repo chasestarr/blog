@@ -8,12 +8,8 @@
 
 .label {
   width: 100%;
-  color: var(--yellow-dark);
   display: flex;
   font-family: "Averia Serif Libre", cursive;
   justify-content: space-between;
   padding-bottom: 4px;
-}
-.label:hover {
-  color: var(--yellow-light);
 }

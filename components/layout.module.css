@@ -4,9 +4,7 @@
 
 .avatar {
   align-items: center;
-  background-color: var(--mono-5);
   border-radius: 50%;
-  color: var(--mono-4);
   display: flex;
   font-family: "Averia Serif Libre", cursive;
   font-size: 18px;
@@ -16,7 +14,8 @@
   width: 36px;
 }
 .avatar:hover {
-  color: var(--mono-3);
+  color: var(--cream);
+  background-color: var(--red-dark);
 }
 
 .center {
@@ -25,7 +24,6 @@
 }
 
 .content {
-  color: var(--mono-2);
   width: 720px;
   margin-bottom: 24px;
 }

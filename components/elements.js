@@ -44,7 +44,7 @@ function Image(props) {
     <img
       style={{
         maxHeight: props.headline ? "360px" : null,
-        objectFit: props.headline ? "none" : null
+        objectFit: props.headline ? "none" : null,
       }}
       className={styles.img}
       src={props.src}
@@ -79,5 +79,5 @@ export default {
   img: Image,
   p: Paragraph,
   pre: Pre,
-  Edge
+  Edge,
 };
