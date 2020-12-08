@@ -10,7 +10,7 @@ function Item(props) {
       <Link href={props.path}>
         <a className={styles.label}>
           <span>{props.title}</span>
-          {props.date && <span>{props.date}</span>}
+          {props.date && <span className={styles.date}>{props.date}</span>}
         </a>
       </Link>
     </li>
@@ -21,7 +21,7 @@ export default function Index() {
   return (
     <Layout>
       <ol className={styles.list}>
-        {pages.map(post => (
+        {pages.map((post) => (
           <Item
             key={post.path}
             path={post.path}

@@ -15,14 +15,14 @@ Crowd-sourced tab sites just can't nail this kind of music well. Most of the tab
 subtle ways, are incorrectly in standard tuning, or using different chord voicings. Each of these
 things and more can lead to disappointing results. I hope to see more lessons from primary sources.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/KOxzMHLYD8U" frameborder="0" allowfullscreen />
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/KOxzMHLYD8U" frameborder="0" allowfullscreen />
 
 I remember learning ["Temecula Sunrise"](https://youtu.be/8z5nFNIIsoI) by Dirty Projectors in
 high school. It felt challenging and satisfying to practice. On their newest collection of EPs the
 song ["Overlord"](https://youtu.be/LzHGYtIqLig) is a standout track. The tune is not too complex,
 but has some odd chords (ex. Ebmaj7 in an alternative voicing) and has a capo on 1.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/rScNXbAulIE?start=565" frameborder="0" allowfullscreen></iframe>
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/rScNXbAulIE?start=565" frameborder="0" allowfullscreen></iframe>
 
 Fleet Foxes songs are often in non-standard tunings, mystifying any reverse engineering attempts
 myself. I suppose some expert guitar players could more successfully get the songs right by ear.

@@ -4,12 +4,18 @@
 
 .item {
   display: block;
+  font-family: "Averia Serif Libre", cursive;
 }
 
 .label {
   width: 100%;
   display: flex;
-  font-family: "Averia Serif Libre", cursive;
   justify-content: space-between;
   padding-bottom: 4px;
+}
+
+@media screen and (max-width: 480px) {
+  .date {
+    display: none;
+  }
 }

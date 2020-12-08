@@ -5,9 +5,6 @@ import elements from "./elements.js";
 import styles from "./layout.module.css";
 
 export default function Layout(props) {
-
-
-
   return (
     <div>
       <header className={styles.header}>
@@ -16,13 +13,32 @@ export default function Layout(props) {
         </Link>
       </header>
       <main className={styles.center}>
-        <div
-          style={{ width: props.contentWidth || "720px" }}
-          className={styles.content}
-        >
+        <div className={styles.content}>
           <MDXProvider components={elements}>{props.children}</MDXProvider>
         </div>
       </main>
+      <footer className={styles.center}>
+        <ul className={styles.socials}>
+          <li>
+            <a href="https://github.com/chasestarr">github.com/chasestarr</a>
+          </li>
+          <li>
+            <a href="https://twitter.com/captivechains">
+              twitter.com/captivechains
+            </a>
+          </li>
+          <li>
+            <a href="https://instagram.com/captivechains">
+              instagram.com/captivechains
+            </a>
+          </li>
+          <li>
+            <a href="https://instagram.com/ssecondbookss">
+              instagram.com/ssecondbookss
+            </a>
+          </li>
+        </ul>
+      </footer>
     </div>
   );
 }

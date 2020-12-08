@@ -5,6 +5,8 @@
 .avatar {
   align-items: center;
   border-radius: 50%;
+  box-sizing: border-box;
+  border: solid 2px var(--red-dark);
   display: flex;
   font-family: "Averia Serif Libre", cursive;
   font-size: 18px;
@@ -28,6 +30,14 @@
   margin-bottom: 24px;
 }
 
+.socials {
+  font-size: 14px;
+  list-style: none;
+  padding-inline-start: 0;
+  width: 720px;
+  padding-bottom: 48px;
+}
+
 @media screen and (max-width: 752px) {
   .header {
     padding: 8px 8px;
@@ -42,6 +52,10 @@
   }
 
   .content {
+    width: 100%;
+  }
+
+  .socials {
     width: 100%;
   }
 }
